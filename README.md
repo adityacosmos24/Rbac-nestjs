@@ -1,98 +1,218 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🔐 RBAC Backend — NestJS + PostgreSQL + Prisma
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> A production-ready **Role-Based Access Control** backend API built with NestJS, PostgreSQL, and Prisma ORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📌 What is this project?
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a backend API that controls **who can do what** in your application.
 
-## Project setup
+- A **regular user** can only see their own profile.
+- A **moderator** can view all users.
+- An **admin** can create roles, assign roles, delete users, and manage everything.
 
-```bash
-$ npm install
+This pattern is called **RBAC (Role-Based Access Control)** — one of the most common security patterns used in real-world applications.
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **NestJS** | Backend framework (like Express, but with structure) |
+| **PostgreSQL** | Database (stores all data) |
+| **Prisma ORM** | Talks to the database using TypeScript |
+| **JWT** | Secure login tokens (like a digital ID card) |
+| **bcrypt** | Password hashing (never stores plain passwords) |
+| **class-validator** | Validates incoming request data |
+
+---
+
+## 📁 Project Structure
+
+```
+rbac-backend/
+├── prisma/
+│   ├── schema.prisma        # Database table definitions
+│   └── seed.ts              # Pre-fills DB with test data
+├── src/
+│   ├── auth/                # Login, Register, JWT
+│   ├── users/               # User CRUD operations
+│   ├── roles/               # Role & Permission management
+│   ├── common/              # Shared utilities (guards, decorators)
+│   ├── prisma/              # Database connection service
+│   ├── app.module.ts        # Root module (wires everything together)
+│   └── main.ts              # Entry point (starts the server)
+├── .env                     # Secret config (never commit this!)
+└── package.json
 ```
 
-## Compile and run the project
+---
+
+## ⚡ Quick Start
+
+### Prerequisites
+- Node.js v18+
+- PostgreSQL running locally (or Docker)
+- npm
+
+### 1. Clone & Install
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone <your-repo-url>
+cd rbac-backend
+npm install
 ```
 
-## Run tests
+### 2. Set Up Environment
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+Edit `.env`:
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/rbac_db"
+JWT_SECRET="your-super-secret-key"
+JWT_EXPIRES_IN="7d"
+PORT=3000
+```
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. Set Up Database
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Apply schema
+npx prisma migrate dev --name init
+
+# Seed with test data
+npx prisma db seed
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Start the Server
 
-## Resources
+```bash
+npm run start:dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Server runs at: `http://localhost:3000/api/v1`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 🔑 Seeded Test Accounts
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| Email | Password | Role |
+|---|---|---|
+| `admin@example.com` | `Admin@123` | Admin (full access) |
+| `moderator@example.com` | `Mod@123` | Moderator (read-only) |
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📡 API Endpoints
 
-## License
+### Auth
+```
+POST   /api/v1/auth/register     — Create a new account
+POST   /api/v1/auth/login        — Login and get JWT token
+GET    /api/v1/auth/profile      — Get your profile (requires login)
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Users
+```
+GET    /api/v1/users             — List all users     [admin, moderator]
+GET    /api/v1/users/me          — Your own profile   [any logged-in user]
+GET    /api/v1/users/:id         — Get user by ID     [admin]
+PATCH  /api/v1/users/:id         — Update user        [admin]
+DELETE /api/v1/users/:id         — Delete user        [admin]
+```
+
+### Roles
+```
+GET    /api/v1/roles                         — List all roles        [admin]
+POST   /api/v1/roles                         — Create role           [admin]
+DELETE /api/v1/roles/:id                     — Delete role           [admin]
+POST   /api/v1/roles/assign                  — Assign role to user   [admin]
+DELETE /api/v1/roles/:roleId/users/:userId   — Revoke role           [admin]
+GET    /api/v1/roles/permissions             — List permissions      [admin]
+```
+
+---
+
+## 🔒 How Authentication Works
+
+1. User calls `POST /auth/login` with email + password
+2. Server verifies credentials and returns a **JWT token**
+3. User sends that token in all future requests:
+   ```
+   Authorization: Bearer <your-token-here>
+   ```
+4. Server reads the token, identifies the user and their roles
+5. If they have the required role → request allowed ✅
+6. If they don't → `403 Forbidden` ❌
+
+---
+
+## 🗃️ Database Schema
+
+```
+User ──< UserRole >── Role ──< RolePermission >── Permission
+```
+
+- A **User** can have many **Roles**
+- A **Role** can have many **Permissions**
+- A **Permission** is an `action` + `subject` pair (e.g., `read:user`, `delete:user`)
+
+---
+
+## 🌱 Default Roles & Permissions
+
+| Role | Permissions |
+|---|---|
+| `admin` | create, read, update, delete users + manage roles |
+| `moderator` | read users, read roles |
+| `user` | none (just basic access) |
+
+---
+
+## 🧪 Example Usage with curl
+
+```bash
+# 1. Login
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"Admin@123"}'
+
+# 2. Use the token from above
+TOKEN="paste-your-token-here"
+
+# 3. Get all users
+curl http://localhost:3000/api/v1/users \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## 📜 Available Scripts
+
+```bash
+npm run start:dev      # Start in development (auto-reload)
+npm run start:prod     # Start in production
+npm run build          # Compile TypeScript
+npx prisma studio      # Open DB visual editor in browser
+npx prisma db seed     # Re-seed the database
+```
+
+---
+
+## ⚠️ Important Notes
+
+- **Never commit `.env`** — it contains secrets
+- **Change `JWT_SECRET`** before deploying to production
+- **Use HTTPS** in production — JWT tokens are only safe over encrypted connections
+- **Passwords are hashed** with bcrypt — plain passwords are never stored
+
+---
+
+## 📄 License
+
+MIT
